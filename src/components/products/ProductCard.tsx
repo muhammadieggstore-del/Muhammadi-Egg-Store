@@ -25,7 +25,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const [quantity, setQuantity] = useState(1);
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
-  const [imageError, setImageError] = useState(false);
+
+  // Dynamic fallback assigner if the initial image link breaks
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.currentTarget;
+    const name = product.name.toLowerCase();
+    
+    if (name.includes('egg')) {
+      target.src = 'https://unsplash.com';
+    } else if (name.includes('bread')) {
+      target.src = 'https://unsplash.com';
+    } else if (name.includes('bun')) {
+      target.src = 'https://unsplash.com';
+    } else {
+      target.src = 'https://unsplash.com';
+    }
+  };
 
   const activePrice = selectedVariant.price;
   const isOutOfStock = product.stockStatus === 'out_of_stock' || product.stockQuantity <= 0;
@@ -42,21 +57,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <article className="group bg-white rounded-2xl border border-neutral-200/90 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden">
       {/* Product Image Slot */}
       <div className="relative aspect-4/3 w-full bg-neutral-100 overflow-hidden">
-        {!imageError ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            referrerPolicy="no-referrer"
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-emerald-950/5 text-emerald-900">
-            <span className="text-3xl mb-1">🥚</span>
-            <span className="text-xs font-semibold">{product.name}</span>
-          </div>
-        )}
+        <img
+          src={product.image}
+          alt={product.name}
+          referrerPolicy="no-referrer"
+          onError={handleImageError}
+          className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
+          loading="lazy"
+        />
 
         {/* Badges on image */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
@@ -71,7 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </span>
         </div>
 
-        {/* Quiet status badges (functional, top right) */}
+        {/* Status badges */}
         <div className="absolute top-2.5 right-2.5 flex flex-col gap-1 items-end">
           {product.isPromotional && (
             <span className="bg-neutral-900 text-white font-bold text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-md shadow-xs">
@@ -91,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
 
-        {/* Category quiet metadata */}
+        {/* Category badge */}
         <div className="absolute bottom-2 left-2.5 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded text-[11px] font-semibold text-neutral-700">
           {product.category}
         </div>
@@ -120,7 +128,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="text-[10px] font-medium text-amber-700">No single retail sale</span>
         </div>
 
-        {/* Quantity Formats Selector (for Eggs e.g. 1 tray, 2 trays, loose packs, etc.) */}
+        {/* Quantity Formats Selector */}
         {product.variants && product.variants.length > 1 && (
           <div className="mb-3">
             <label className="text-[11px] font-semibold text-neutral-500 flex items-center gap-1 mb-1.5">
@@ -165,13 +173,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               </span>
             </div>
 
-            {/* Quick stock status text */}
             <span className="text-[11px] text-neutral-500 font-medium">
               {!isOutOfStock ? `Stock: Available` : 'Unavailable'}
             </span>
           </div>
 
-          {/* Stepper + Add Button */}
           <div className="flex items-center gap-2">
             <QuantitySelector
               quantity={quantity}
@@ -185,26 +191,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               type="button"
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className={`flex-1 min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs ${
-                isAddedFeedback
-                  ? 'bg-emerald-800 text-white'
-                  : isOutOfStock
-                  ? 'bg-neutral-200 text-neutral-500 cursor-not-allowed'
-                  : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-emerald-900/10'
+              className={`flex-1 min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold text-white transition-all ${
+                isOutOfStock 
+                  ? 'bg-neutral-300 cursor-not-allowed' 
+                  : isAddedFeedback 
+                    ? 'bg-amber-500' 
+                    : 'bg-emerald-900 hover:bg-emerald-800'
               }`}
             >
               {isAddedFeedback ? (
-                <>
-                  <Check className="w-4 h-4 text-amber-300" />
-                  <span>Added to Cart!</span>
-                </>
-              ) : isOutOfStock ? (
-                <span>Out of Stock</span>
+                <span className="flex items-center justify-center gap-1">
+                  <Check className="w-3.5 h-3.5" /> Added
+                </span>
               ) : (
-                <>
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Add to Cart</span>
-                </>
+                <span className="flex items-center justify-center gap-1">
+                  <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
+                </span>
               )}
             </button>
           </div>
