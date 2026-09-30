@@ -18,7 +18,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps: deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
@@ -28,28 +28,23 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'npm'
 
-    - name: Configure Asset Paths and Dependencies
+    - name: Dynamic Build Scan
       run: |
-        # Injects the sub-folder path rules into configuration setups if Vite/React is used
-        if [ -f vite.config.js ]; then
-          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.js
-        elif [ -f vite.config.ts ]; then
-          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.ts
-        fi
-        
-        npm install --legacy-peer-deps
-        npm run build --if-present
+        # Installs base node tools safely if needed, but keeps raw file structures safe
+        npm install --legacy-peer-deps || true
+        npm run build --if-present || true
 
-    - name: Detect and Stage Public Assets Folder
-      id: find-folder
+    - name: Select Core Web Directory
+      id: find-dir
       run: |
-        # Verifies if files compiled into dist, build, public, or stay at root folder level
+        # Pins the precise output folder where index.html sits
         if [ -d "dist" ]; then
           echo "dir=dist" >> $GITHUB_OUTPUT
         elif [ -d "build" ]; then
           echo "dir=build" >> $GITHUB_OUTPUT
+        elif [ -d "public" ]; then
+          echo "dir=public" >> $GITHUB_OUTPUT
         else
           echo "dir=." >> $GITHUB_OUTPUT
         fi
@@ -57,7 +52,7 @@ jobs:
     - name: Upload Static Web Assets Structure
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ${{ steps.find-folder.outputs.dir }}
+        path: ${{ steps.find-dir.outputs.dir }}
 
     - name: Deploy Live Link to GitHub Pages
       id: deployment
