@@ -1,4 +1,4 @@
-name: Deploy Muhammadi Egg Store Live App
+name: Deploy Bun Vite App to Pages
 
 on:
   push:
@@ -24,35 +24,28 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Setup Bun Environment
+      uses: oven-sh/setup-bun@v2
       with:
-        node-version: 20
+        bun-version: latest
 
-    - name: Dynamic Build Scan
+    - name: Inject GitHub Pages Base Path
       run: |
-        # Installs base node tools safely if needed, but keeps raw file structures safe
-        npm install --legacy-peer-deps || true
-        npm run build --if-present || true
-
-    - name: Select Core Web Directory
-      id: find-dir
-      run: |
-        # Pins the precise output folder where index.html sits
-        if [ -d "dist" ]; then
-          echo "dir=dist" >> $GITHUB_OUTPUT
-        elif [ -d "build" ]; then
-          echo "dir=build" >> $GITHUB_OUTPUT
-        elif [ -d "public" ]; then
-          echo "dir=public" >> $GITHUB_OUTPUT
-        else
-          echo "dir=." >> $GITHUB_OUTPUT
+        # Adjusts the vite.config.ts file to compile relative paths for GitHub Pages subfolder
+        if [ -f vite.config.ts ]; then
+          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.ts
         fi
 
-    - name: Upload Static Web Assets Structure
+    - name: Install Dependencies
+      run: bun install
+
+    - name: Compile Production Build
+      run: bun run build
+
+    - name: Upload Built Static Web Assets
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ${{ steps.find-dir.outputs.dir }}
+        path: dist
 
     - name: Deploy Live Link to GitHub Pages
       id: deployment
