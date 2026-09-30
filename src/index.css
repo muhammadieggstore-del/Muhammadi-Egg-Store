@@ -36,3 +36,23 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
+
+/* Automated fallback images for Muhammadi Egg Store items */
+img[src*="egg"], img[alt*="egg"], img[alt*="Egg"] {
+  content: url('https://unsplash.com');
+}
+
+img[src*="bread"], img[alt*="bread"], img[alt*="Bread"] {
+  content: url('https://unsplash.com');
+}
+
+img[src*="bun"], img[alt*="bun"], img[alt*="Bun"] {
+  content: url('https://unsplash.com');
+}
+
+/* General safety rule: If any image card is completely blank, display standard fresh inventory items */
+img:onerror, img {
+  min-height: 150px;
+  background-color: #f5f5f5;
+  object-fit: cover;
+}
