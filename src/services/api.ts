@@ -1,5 +1,9 @@
 import { Product, Order, StoreSettings } from '../types';
 
+// Images are stored in /public/images and must use Vite's base URL so they
+// work both locally and when deployed under a GitHub Pages project path.
+const imageUrl = (filename: string) => `${import.meta.env.BASE_URL}images/${filename}`;
+
 // Real high-quality product assets with correct paths
 const MOCK_PRODUCTS: Product[] = [
   {
@@ -10,7 +14,7 @@ const MOCK_PRODUCTS: Product[] = [
     category: 'Eggs',
     price: 180,
     unit: 'Tray',
-    image: 'https://unsplash.com',
+    image: imageUrl('white_eggs_trays_1790536765513.jpg'),
     stockStatus: 'in_stock',
     stockQuantity: 500,
     isPromotional: true,
@@ -27,7 +31,7 @@ const MOCK_PRODUCTS: Product[] = [
     category: 'Bakery',
     price: 30,
     unit: 'Piece',
-    image: 'https://unsplash.com',
+    image: imageUrl('britannia_white_bread_1790535286771.jpg'),
     stockStatus: 'in_stock',
     stockQuantity: 200,
     variants: [
@@ -42,7 +46,7 @@ const MOCK_PRODUCTS: Product[] = [
     category: 'Bakery',
     price: 15,
     unit: 'Pack',
-    image: 'https://unsplash.com',
+    image: imageUrl('two_regular_buns_pack_1790535298654.jpg'),
     stockStatus: 'in_stock',
     stockQuantity: 300,
     variants: [
