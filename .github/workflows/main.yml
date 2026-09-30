@@ -32,10 +32,8 @@ jobs:
     - name: Install Dependencies
       run: bun install
 
-    - name: Compile Full CSS Styles and App Assets
-      run: |
-        # Forces Vite to build production-ready optimized stylesheets
-        bun run build -- --minify esbuild --force
+    - name: Compile Production Build
+      run: bun run build
 
     - name: Upload Built Static Web Assets
       uses: actions/upload-pages-artifact@v3
