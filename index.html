@@ -5,47 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Muhammadi Egg Store</title>
-    <script>
-      // Ultimate background monitor that continually intercepts all dynamic React images
-      const fixImage = (img) => {
-        if (!img || img.getAttribute('data-fixed')) return;
-        
-        const src = (img.src || '').toLowerCase();
-        const alt = (img.alt || '').toLowerCase();
-        
-        img.setAttribute('data-fixed', 'true'); // Prevents endless loading loops
-        
-        if (src.includes('egg') || alt.includes('egg')) {
-          img.src = 'https://unsplash.com';
-        } else if (src.includes('bread') || alt.includes('bread')) {
-          img.src = 'https://unsplash.com';
-        } else if (src.includes('bun') || alt.includes('bun')) {
-          img.src = 'https://unsplash.com';
-        } else {
-          img.src = 'https://unsplash.com';
-        }
-      };
-
-      // Forces browser to watch for newly drawn elements from React components
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.tagName === 'IMG') fixImage(node);
-            if (node.querySelectorAll) {
-              node.querySelectorAll('img').forEach(fixImage);
-            }
-          });
-        });
-      });
-
-      // Start observing the page elements immediately
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-
-      // Secondary global capture rule for network loading exceptions
-      window.addEventListener('error', (e) => {
-        if (e.target.tagName === 'IMG') fixImage(e.target);
-      }, true);
-    </script>
+    <img src="/images/white_eggs_trays_1790536765513.jpg" />
   </head>
   <body>
     <div id="root"></div>
