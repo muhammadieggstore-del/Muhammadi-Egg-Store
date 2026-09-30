@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite' // Native v4 plugin
 
-// https://vitejs.dev
 export default defineConfig({
-  plugins: [react()],
-  base: './', // Forces relative path asset tracking for colors and images
+  plugins: [
+    react(),
+    tailwindcss(), // Bypasses PostCSS cleanly
+  ],
+  base: './',
 })
