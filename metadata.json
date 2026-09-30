@@ -1,0 +1,6 @@
+{
+  "name": "Muhammadi Egg Store",
+  "description": "Fresh Eggs Supplier serving Loni, Ghaziabad. Retail and bulk egg supply with reliable delivery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
