@@ -26,7 +26,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
 
-  // Dynamic fallback assigner if the initial image link breaks
+  // Fallback assigner if the initial image link breaks
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.currentTarget;
     const name = product.name.toLowerCase();
@@ -55,7 +55,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <article className="group bg-white rounded-2xl border border-neutral-200/90 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden">
-      {/* Product Image Slot */}
       <div className="relative aspect-4/3 w-full bg-neutral-100 overflow-hidden">
         <img
           src={product.image}
@@ -66,7 +65,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           loading="lazy"
         />
 
-        {/* Badges on image */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
           {product.category === 'Eggs' && (
             <span className="bg-emerald-900/95 text-white font-bold text-[10px] tracking-wide px-2.5 py-1 rounded-md shadow-xs border border-emerald-700/50 flex items-center gap-1">
@@ -79,7 +77,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </span>
         </div>
 
-        {/* Status badges */}
         <div className="absolute top-2.5 right-2.5 flex flex-col gap-1 items-end">
           {product.isPromotional && (
             <span className="bg-neutral-900 text-white font-bold text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-md shadow-xs">
@@ -99,13 +96,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
 
-        {/* Category badge */}
         <div className="absolute bottom-2 left-2.5 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded text-[11px] font-semibold text-neutral-700">
           {product.category}
         </div>
       </div>
 
-      {/* Product Information */}
       <div className="p-4 flex-1 flex flex-col">
         <div className="mb-2">
           <h3 className="text-base font-bold text-neutral-900 leading-snug group-hover:text-emerald-800 transition-colors">
@@ -120,7 +115,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.description}
         </p>
 
-        {/* Minimum Order Notice Banner */}
         <div className="mb-3 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200/80 text-[11px] text-amber-900 flex items-center justify-between">
           <span className="font-semibold">
             {product.category === 'Eggs' ? 'Minimum 50 Trays (1,500 White Eggs)' : 'Minimum 25 Pieces'}
@@ -128,7 +122,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="text-[10px] font-medium text-amber-700">No single retail sale</span>
         </div>
 
-        {/* Quantity Formats Selector */}
         {product.variants && product.variants.length > 1 && (
           <div className="mb-3">
             <label className="text-[11px] font-semibold text-neutral-500 flex items-center gap-1 mb-1.5">
@@ -160,7 +153,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         )}
 
-        {/* Pricing and Action row */}
         <div className="mt-auto pt-3 border-t border-neutral-100 flex flex-col gap-3">
           <div className="flex items-baseline justify-between">
             <div>
@@ -172,7 +164,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 / {selectedVariant.quantityLabel || product.unit}
               </span>
             </div>
-
             <span className="text-[11px] text-neutral-500 font-medium">
               {!isOutOfStock ? `Stock: Available` : 'Unavailable'}
             </span>
