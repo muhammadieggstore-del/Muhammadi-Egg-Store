@@ -6,23 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Muhammadi Egg Store</title>
     <script>
-      // Automatically intercepts broken image paths at runtime and replaces them with live assets
-      window.addEventListener('error', function(e) {
-        if (e.target.tagName === 'IMG') {
-          const src = e.target.src.toLowerCase();
-          const alt = (e.target.alt || '').toLowerCase();
-          
-          if (src.includes('egg') || alt.includes('egg')) {
-            e.target.src = 'https://unsplash.com';
-          } else if (src.includes('bread') || alt.includes('bread')) {
-            e.target.src = 'https://unsplash.com';
-          } else if (src.includes('bun') || alt.includes('bun')) {
-            e.target.src = 'https://unsplash.com';
-          } else {
-            // Ultimate backup option if a specific item matching name isn't identified
-            e.target.src = 'https://unsplash.com';
-          }
+      // Ultimate background monitor that continually intercepts all dynamic React images
+      const fixImage = (img) => {
+        if (!img || img.getAttribute('data-fixed')) return;
+        
+        const src = (img.src || '').toLowerCase();
+        const alt = (img.alt || '').toLowerCase();
+        
+        img.setAttribute('data-fixed', 'true'); // Prevents endless loading loops
+        
+        if (src.includes('egg') || alt.includes('egg')) {
+          img.src = 'https://unsplash.com';
+        } else if (src.includes('bread') || alt.includes('bread')) {
+          img.src = 'https://unsplash.com';
+        } else if (src.includes('bun') || alt.includes('bun')) {
+          img.src = 'https://unsplash.com';
+        } else {
+          img.src = 'https://unsplash.com';
         }
+      };
+
+      // Forces browser to watch for newly drawn elements from React components
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.tagName === 'IMG') fixImage(node);
+            if (node.querySelectorAll) {
+              node.querySelectorAll('img').forEach(fixImage);
+            }
+          });
+        });
+      });
+
+      // Start observing the page elements immediately
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+
+      // Secondary global capture rule for network loading exceptions
+      window.addEventListener('error', (e) => {
+        if (e.target.tagName === 'IMG') fixImage(e.target);
       }, true);
     </script>
   </head>
