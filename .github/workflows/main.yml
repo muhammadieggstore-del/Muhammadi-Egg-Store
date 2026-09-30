@@ -29,13 +29,6 @@ jobs:
       with:
         bun-version: latest
 
-    - name: Inject GitHub Pages Base Path
-      run: |
-        # Adjusts the vite.config.ts file to compile relative paths for GitHub Pages subfolder
-        if [ -f vite.config.ts ]; then
-          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.ts
-        fi
-
     - name: Install Dependencies
       run: bun install
 
