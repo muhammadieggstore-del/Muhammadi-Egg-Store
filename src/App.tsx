@@ -188,7 +188,7 @@ function StoreApp() {
                 <div className="lg:col-span-5">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-emerald-800/60 bg-emerald-900 aspect-16/10 lg:aspect-4/3">
                     <img
-                      src="/src/assets/images/white_eggs_trays_1790536765513.jpg"
+                      src={`${import.meta.env.BASE_URL}images/white_eggs_trays_1790536765513.jpg`}
                       alt="Muhammadi Egg Store fresh white egg trays"
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
