@@ -8,7 +8,7 @@
       "category": "Eggs",
       "unit": "Tray (30 White Eggs)",
       "price": 175,
-      "image": "/src/assets/images/white_eggs_trays_1790536765513.jpg",
+      "image": "/images/white_eggs_trays_1790536765513.jpg",
       "stockStatus": "in_stock",
       "stockQuantity": 500,
       "minOrderQuantity": 50,
@@ -53,7 +53,7 @@
       "category": "Bakery",
       "unit": "Medium Pack",
       "price": 35,
-      "image": "/src/assets/images/britannia_white_bread_1790535286771.jpg",
+      "image": "/images/britannia_white_bread_1790535286771.jpg",
       "stockStatus": "in_stock",
       "stockQuantity": 300,
       "minOrderQuantity": 25,
@@ -91,7 +91,7 @@
       "category": "Bakery",
       "unit": "Transparent Pack (2 Buns)",
       "price": 15,
-      "image": "/src/assets/images/two_regular_buns_pack_1790535298654.jpg",
+      "image": "/images/two_regular_buns_pack_1790535298654.jpg",
       "stockStatus": "in_stock",
       "stockQuantity": 350,
       "minOrderQuantity": 25,
@@ -146,7 +146,7 @@
           "unitPrice": 175,
           "quantity": 2,
           "subtotal": 350,
-          "image": "/src/assets/images/egg_tray_30_fresh_1790534499444.jpg"
+          "image": "/images/egg_tray_30_fresh_1790534499444.jpg"
         },
         {
           "productId": "prod-fresh-bread",
@@ -156,7 +156,7 @@
           "unitPrice": 35,
           "quantity": 1,
           "subtotal": 35,
-          "image": "/src/assets/images/fresh_bakery_bread_1790534509896.jpg"
+          "image": "/images/fresh_bakery_bread_1790534509896.jpg"
         }
       ],
       "subtotal": 385,
@@ -211,7 +211,7 @@
           "unitPrice": 860,
           "quantity": 1,
           "subtotal": 860,
-          "image": "/src/assets/images/egg_tray_30_fresh_1790534499444.jpg"
+          "image": "/images/egg_tray_30_fresh_1790534499444.jpg"
         }
       ],
       "subtotal": 860,
@@ -267,7 +267,7 @@
           "unitPrice": 175,
           "quantity": 1,
           "subtotal": 175,
-          "image": "/src/assets/images/egg_tray_30_fresh_1790534499444.jpg"
+          "image": "/images/egg_tray_30_fresh_1790534499444.jpg"
         }
       ],
       "subtotal": 175,
@@ -312,7 +312,7 @@
           "unitPrice": 8750,
           "quantity": 1,
           "subtotal": 8750,
-          "image": "/src/assets/images/white_eggs_trays_1790536765513.jpg"
+          "image": "/images/white_eggs_trays_1790536765513.jpg"
         },
         {
           "productId": "prod-britannia-white-bread-med",
@@ -322,7 +322,7 @@
           "unitPrice": 875,
           "quantity": 1,
           "subtotal": 875,
-          "image": "/src/assets/images/britannia_white_bread_1790535286771.jpg"
+          "image": "/images/britannia_white_bread_1790535286771.jpg"
         }
       ],
       "subtotal": 9625,
@@ -362,7 +362,7 @@
           "unitPrice": 26250,
           "quantity": 10,
           "subtotal": 262500,
-          "image": "/src/assets/images/white_eggs_trays_1790536765513.jpg"
+          "image": "/images/white_eggs_trays_1790536765513.jpg"
         }
       ],
       "subtotal": 262500,
