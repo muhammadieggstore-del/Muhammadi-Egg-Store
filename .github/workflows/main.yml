@@ -25,7 +25,7 @@ jobs:
     - name: Initialize Android Studio Project Wrapper
       run: |
         npm install @capacitor/core @capacitor/cli --legacy-peer-deps
-        npx cap init "Muhammadi Egg Store" "com.muhammadieggstore.app" --web-dir=dist --confirm
+        npx cap init "Muhammadi Egg Store" "com.muhammadieggstore.app" --web-dir=dist
         npx cap add android
         npx cap sync android
 
