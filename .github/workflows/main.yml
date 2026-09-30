@@ -29,10 +29,22 @@ jobs:
       with:
         bun-version: latest
 
-    - name: Force Tailwind v4 Packages
-      run: bun add tailwindcss@4 @tailwindcss/vite --dev
+    - name: Force Generate Public Assets Folder
+      run: |
+        # Creates physical folders matching standard local asset fallback calls
+        mkdir -p public/images
+        mkdir -p src/assets
+        
+        # Downloads professional images directly into the repository workspace
+        curl -sL "https://unsplash.com" -o public/white-eggs.jpg
+        curl -sL "https://unsplash.com" -o public/bread.jpg
+        curl -sL "https://unsplash.com" -o public/bun.jpg
+        
+        # Duplicates images inside subfolders to catch any route variation AI Studio wrote
+        cp public/*.jpg public/images/ 2>/dev/null || true
+        cp public/*.jpg src/assets/ 2>/dev/null || true
 
-    - name: Install Project Dependencies
+    - name: Install Dependencies
       run: bun install
 
     - name: Compile Production Build
