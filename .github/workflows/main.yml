@@ -29,20 +29,17 @@ jobs:
       with:
         bun-version: latest
 
-    - name: Force Generate Public Assets Folder
+    - name: Intercept and Fix Code Image String Links
       run: |
-        # Creates physical folders matching standard local asset fallback calls
-        mkdir -p public/images
-        mkdir -p src/assets
+        # Looks for files that contain data and injects live unsplash links directly into the source arrays
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|/images/white-eggs.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|/images/bread.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|/images/bun.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
         
-        # Downloads professional images directly into the repository workspace
-        curl -sL "https://unsplash.com" -o public/white-eggs.jpg
-        curl -sL "https://unsplash.com" -o public/bread.jpg
-        curl -sL "https://unsplash.com" -o public/bun.jpg
-        
-        # Duplicates images inside subfolders to catch any route variation AI Studio wrote
-        cp public/*.jpg public/images/ 2>/dev/null || true
-        cp public/*.jpg src/assets/ 2>/dev/null || true
+        # Broad lookup in case files don't start with standard slashes
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|images/white-eggs.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|images/bread.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
+        find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.json" \) -not -path "*/node_modules/*" -exec sed -i "s|images/bun.jpg|https://unsplash.com\&auto=format\&fit=crop\&q=80|g" {} +
 
     - name: Install Dependencies
       run: bun install
