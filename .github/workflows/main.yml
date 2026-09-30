@@ -1,56 +1,64 @@
-name: Generate Muhammadi Egg Store APK
+name: Deploy Muhammadi Egg Store Live App
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps: deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        node-version: 20
+        cache: 'npm'
 
-    - name: Install System Dependencies
+    - name: Configure Asset Paths and Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libbz2-dev libreadline-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libcap-dev libffi-dev liblzma-dev uuid-dev
-        pip3 install --user --upgrade buildozer
-
-    - name: Compile and Package APK
-      run: |
-        # Creates a fallback basic app structure if AI Studio omitted configuration configs
-        if [ ! -f buildozer.spec ]; then
-          echo "[app]" > buildozer.spec
-          echo "title = Muhammadi Egg Store" >> buildozer.spec
-          echo "package.name = muhammadieggstore" >> buildozer.spec
-          echo "package.domain = com.muhammadieggstore" >> buildozer.spec
-          echo "source.dir = ." >> buildozer.spec
-          echo "source.include_exts = py,png,jpg,kv,atlas,html,js,css" >> buildozer.spec
-          echo "version = 1.0" >> buildozer.spec
-          echo "requirements = python3" >> buildozer.spec
-          echo "orientation = portrait" >> buildozer.spec
-          echo "osx.python_version = 3" >> buildozer.spec
-          echo "osx.kivy_version = 1.9.1" >> buildozer.spec
-          echo "fullscreen = 1" >> buildozer.spec
-          echo "android.archs = arm64-v8a" >> buildozer.spec
-          echo "android.allow_backup = True" >> buildozer.spec
+        # Injects the sub-folder path rules into configuration setups if Vite/React is used
+        if [ -f vite.config.js ]; then
+          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.js
+        elif [ -f vite.config.ts ]; then
+          sed -i "s|defineConfig({|defineConfig({ base: '/Muhammadi-Egg-Store/',|g" vite.config.ts
         fi
         
-        # Runs the automated build pipeline in debug mode
-        ~/.local/bin/buildozer -v android debug || true
-        mkdir -p output-apk
-        find . -name "*.apk" -exec cp {} output-apk/Muhammadi-Egg-Store.apk \; 2>/dev/null || true
+        npm install --legacy-peer-deps
+        npm run build --if-present
 
-    - name: Upload Finished APK
-      uses: actions/upload-artifact@v4
+    - name: Detect and Stage Public Assets Folder
+      id: find-folder
+      run: |
+        # Verifies if files compiled into dist, build, public, or stay at root folder level
+        if [ -d "dist" ]; then
+          echo "dir=dist" >> $GITHUB_OUTPUT
+        elif [ -d "build" ]; then
+          echo "dir=build" >> $GITHUB_OUTPUT
+        else
+          echo "dir=." >> $GITHUB_OUTPUT
+        fi
+
+    - name: Upload Static Web Assets Structure
+      uses: actions/upload-pages-artifact@v3
       with:
-        name: Muhammadi-Egg-Store-App
-        path: output-apk/Muhammadi-Egg-Store.apk
+        path: ${{ steps.find-folder.outputs.dir }}
+
+    - name: Deploy Live Link to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
