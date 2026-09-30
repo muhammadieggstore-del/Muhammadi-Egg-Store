@@ -8,5 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: './', // Universal pathing structure resolves all lowercase/uppercase folder mismatches
+  base: './', // Relative asset URLs work on GitHub Pages project sites and custom domains
 })

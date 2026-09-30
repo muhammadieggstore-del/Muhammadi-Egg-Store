@@ -114,7 +114,7 @@ app.post('/api/products', verifyAdmin, (req: Request, res: Response) => {
     category: category || 'Eggs',
     unit: unit || 'Unit',
     price: Number(price),
-    image: image || '/src/assets/images/egg_tray_30_fresh_1790534499444.jpg',
+    image: image || '/images/egg_tray_30_fresh_1790534499444.jpg',
     stockStatus: stockStatus || 'in_stock',
     stockQuantity: Number(stockQuantity) || 100,
     minOrderQuantity: Number(minOrderQuantity) || 1,
@@ -321,7 +321,7 @@ app.post('/api/orders', (req: Request, res: Response) => {
       unitPrice,
       quantity: qty,
       subtotal: itemSubtotal,
-      image: item.image || dbProduct?.image || '/src/assets/images/egg_tray_30_fresh_1790534499444.jpg'
+      image: item.image || dbProduct?.image || '/images/egg_tray_30_fresh_1790534499444.jpg'
     };
   });
 
