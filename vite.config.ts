@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev
 export default defineConfig({
   plugins: [react()],
-  base: '/Muhammadi-Egg-Store/',
+  base: './', // Forces relative path asset tracking for colors and images
 })
