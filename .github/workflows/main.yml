@@ -29,7 +29,10 @@ jobs:
       with:
         bun-version: latest
 
-    - name: Install Dependencies
+    - name: Force Tailwind v4 Packages
+      run: bun add tailwindcss@4 @tailwindcss/vite --dev
+
+    - name: Install Project Dependencies
       run: bun install
 
     - name: Compile Production Build
