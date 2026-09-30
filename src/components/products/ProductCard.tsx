@@ -31,14 +31,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const target = e.currentTarget;
     const name = product.name.toLowerCase();
     
+    const base = import.meta.env.BASE_URL;
     if (name.includes('egg')) {
-      target.src = 'https://unsplash.com';
+      target.src = `${base}images/white_eggs_trays_1790536765513.jpg`;
     } else if (name.includes('bread')) {
-      target.src = 'https://unsplash.com';
+      target.src = `${base}images/britannia_white_bread_1790535286771.jpg`;
     } else if (name.includes('bun')) {
-      target.src = 'https://unsplash.com';
+      target.src = `${base}images/two_regular_buns_pack_1790535298654.jpg`;
     } else {
-      target.src = 'https://unsplash.com';
+      target.src = `${base}images/white_eggs_trays_1790536765513.jpg`;
     }
   };
 
