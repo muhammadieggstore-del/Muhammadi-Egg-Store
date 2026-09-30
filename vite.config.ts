@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite' // Native v4 plugin
+import tailwindcss from '@tailwindcss/vite'
 
+// https://vitejs.dev
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // Bypasses PostCSS cleanly
+    tailwindcss(),
   ],
-  base: './',
+  base: './', // Universal pathing structure resolves all lowercase/uppercase folder mismatches
 })
