@@ -99,7 +99,7 @@ export const submitBulkOrder = async (bulkData: any): Promise<boolean> => {
 };
 
 // Admin Dashboard API
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://muhammadi-egg-store.onrender.com').replace(/\/$/, '');
 const apiUrl = (path: string) => `${API_BASE_URL}${path}`;
 
 async function adminRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
