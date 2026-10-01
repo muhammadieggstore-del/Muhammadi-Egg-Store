@@ -11,7 +11,6 @@ import {
   adminUpdateProduct,
   adminDeleteProduct,
   fetchProducts,
-  adminUpdateSettings,
   fetchSettings
 } from '../../services/api';
 import { Product, Order, BulkOrderInquiry, CustomerRecord, AdminMetrics, OrderStatus, BulkInquiryStatus, StoreSettings } from '../../types';
@@ -49,7 +48,8 @@ interface AdminDashboardProps {
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
   // Authentication State
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('mes_admin_token'));
-  const [pinInput, setPinInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -89,7 +89,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
   });
 
   // Settings Form
-  const [newPin, setNewPin] = useState('');
 
   // Handle Login
   const handleLogin = async (e: React.FormEvent) => {
@@ -98,11 +97,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
     setIsLoggingIn(true);
 
     try {
-      const res = await adminLogin(pinInput);
+      const res = await adminLogin(usernameInput.trim(), passwordInput);
       setToken(res.token);
       localStorage.setItem('mes_admin_token', res.token);
     } catch (err: any) {
-      setAuthError(err.message || 'Invalid PIN. Try store PIN (e.g. 6392)');
+      setAuthError(err.message || 'Invalid username or password.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -288,23 +287,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                Enter Store Management PIN
-              </label>
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">Username</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  required
+                  autoComplete="username"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  placeholder="Admin username"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">Password</label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-3" />
                 <input
                   type="password"
                   required
-                  value={pinInput}
-                  onChange={(e) => setPinInput(e.target.value)}
-                  placeholder="Default PIN: 6392"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 font-mono tracking-widest"
+                  autoComplete="current-password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Admin password"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700"
                 />
               </div>
-              <p className="text-[11px] text-neutral-400 mt-1">
-                Store owner PIN is initialized to <strong>6392</strong> (last 4 digits of phone).
-              </p>
             </div>
 
             <button
@@ -315,7 +326,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
               {isLoggingIn ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Verifying PIN...</span>
+                  <span>Signing in...</span>
                 </>
               ) : (
                 <span>Access Store Dashboard</span>
@@ -992,34 +1003,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
                 </div>
 
                 <div className="pt-3 border-t border-neutral-100">
-                  <h3 className="font-bold text-neutral-900 mb-2">Change Management PIN</h3>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newPin}
-                      onChange={(e) => setNewPin(e.target.value)}
-                      placeholder="Enter new 4-6 digit PIN"
-                      className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 font-mono text-sm"
-                    />
-                    <button
-                      onClick={async () => {
-                        if (!newPin || newPin.length < 4) {
-                          alert('PIN must be at least 4 digits');
-                          return;
-                        }
-                        try {
-                          await adminUpdateSettings(token!, { adminPin: newPin });
-                          alert('Admin PIN updated! Next time please use this new PIN.');
-                          setNewPin('');
-                        } catch (e: any) {
-                          alert(e.message || 'Failed to update PIN');
-                        }
-                      }}
-                      className="px-4 py-2 rounded-xl bg-emerald-800 text-white font-bold hover:bg-emerald-900"
-                    >
-                      Update PIN
-                    </button>
-                  </div>
+                  <h3 className="font-bold text-neutral-900 mb-2">Admin Login Credentials</h3>
+                  <p className="text-[11px] text-neutral-500 leading-relaxed">
+                    The admin username and password are stored on the server and are not exposed through public store settings.
+                    Change them in your server hosting environment using <span className="font-mono">ADMIN_USERNAME</span> and <span className="font-mono">ADMIN_PASSWORD</span>.
+                  </p>
                 </div>
               </div>
             </div>
