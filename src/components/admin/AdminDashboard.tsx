@@ -84,7 +84,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
     stockStatus: 'in_stock' as 'in_stock' | 'low_stock' | 'out_of_stock',
     stockQuantity: 200,
     minOrderQuantity: 50,
-    image: '/src/assets/images/white_eggs_trays_1790536765513.jpg',
+    image: `${import.meta.env.BASE_URL}images/white_eggs_trays_1790536765513.jpg`,
     isActive: true,
   });
 
@@ -187,7 +187,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
       stockStatus: 'in_stock',
       stockQuantity: 500,
       minOrderQuantity: 50,
-      image: '/src/assets/images/white_eggs_trays_1790536765513.jpg',
+      image: `${import.meta.env.BASE_URL}images/white_eggs_trays_1790536765513.jpg`,
       isActive: true,
     });
     setIsProductModalOpen(true);
