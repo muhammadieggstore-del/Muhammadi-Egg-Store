@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import http from 'http';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,6 +14,15 @@ const DATA_FILE = path.resolve(__dirname, 'data', 'store.json');
 
 // Middleware
 app.use(express.json());
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const allowedOrigin = process.env.FRONTEND_ORIGIN?.trim();
+  if (allowedOrigin) res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header('Vary', 'Origin');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, x-admin-token');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 // Persistent database helpers
 function getDB() {
@@ -44,15 +54,33 @@ function saveDB(data: any) {
   }
 }
 
-// Simple Admin Authentication Middleware
+// Admin authentication
+// Credentials live on the server and are never returned to the browser.
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+
+if (process.env.NODE_ENV === 'production' && !ADMIN_PASSWORD) {
+  throw new Error('ADMIN_PASSWORD must be configured in production.');
+}
+const adminTokens = new Map<string, number>();
+const loginAttempts = new Map<string, { count: number; firstAttemptAt: number }>();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const MAX_LOGIN_ATTEMPTS = 10;
+const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const MAX_ADMIN_TOKENS = 100;
+
+function timingSafeStringEqual(a: string, b: string) {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  return aBuf.length === bBuf.length && crypto.timingSafeEqual(aBuf, bBuf);
+}
+
 function verifyAdmin(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers['x-admin-token'] || req.query.token;
-  const db = getDB();
-  const currentPin = db.storeSettings?.adminPin || '6392';
-  
-  if (token === `MES-TOKEN-${currentPin}`) {
-    return next();
-  }
+  const token = String(req.headers['x-admin-token'] || req.query.token || '');
+  const issuedAt = adminTokens.get(token);
+
+  if (issuedAt && Date.now() - issuedAt < ADMIN_SESSION_TTL_MS) return next();
+  if (token) adminTokens.delete(token);
   return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
 }
 
@@ -60,26 +88,45 @@ function verifyAdmin(req: Request, res: Response, next: NextFunction) {
 
 // 1. Admin Login
 app.post('/api/admin/login', (req: Request, res: Response) => {
-  const { pin } = req.body;
-  const db = getDB();
-  const validPin = db.storeSettings?.adminPin || '6392';
+  res.setHeader('Cache-Control', 'no-store');
+  const { username, password } = req.body || {};
+  const clientKey = String(req.ip || req.socket.remoteAddress || 'unknown');
+  const now = Date.now();
+  const attempt = loginAttempts.get(clientKey);
 
-  if (!pin || String(pin).trim() !== String(validPin).trim()) {
-    return res.status(401).json({ error: 'Invalid PIN. Please enter the correct Store PIN.' });
+  if (attempt && now - attempt.firstAttemptAt < LOGIN_WINDOW_MS && attempt.count >= MAX_LOGIN_ATTEMPTS) {
+    return res.status(429).json({ error: 'Too many login attempts. Please try again later.' });
   }
 
-  const token = `MES-TOKEN-${validPin}`;
-  return res.json({
-    success: true,
-    token,
-    message: 'Store Admin authorized'
-  });
+  if (!attempt || now - attempt.firstAttemptAt >= LOGIN_WINDOW_MS) {
+    loginAttempts.set(clientKey, { count: 1, firstAttemptAt: now });
+  } else {
+    attempt.count += 1;
+  }
+
+  const suppliedUsername = String(username || '').trim();
+  const suppliedPassword = String(password || '');
+  if (!timingSafeStringEqual(suppliedUsername, ADMIN_USERNAME) || !timingSafeStringEqual(suppliedPassword, ADMIN_PASSWORD)) {
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  }
+
+  loginAttempts.delete(clientKey);
+  const token = crypto.randomBytes(32).toString('hex');
+  if (adminTokens.size >= MAX_ADMIN_TOKENS) {
+    const oldest = adminTokens.keys().next().value;
+    if (oldest) adminTokens.delete(oldest);
+  }
+  adminTokens.set(token, Date.now());
+
+  return res.json({ success: true, token, message: 'Store Admin authorized' });
 });
 
 // 2. Products API
 app.get('/api/products', (req: Request, res: Response) => {
   const db = getDB();
-  const isAdmin = req.headers['x-admin-token'] === `MES-TOKEN-${db.storeSettings?.adminPin || '6392'}`;
+  const token = String(req.headers['x-admin-token'] || '');
+  const issuedAt = adminTokens.get(token);
+  const isAdmin = Boolean(issuedAt && Date.now() - issuedAt < ADMIN_SESSION_TTL_MS);
   
   if (isAdmin) {
     return res.json(db.products || []);
@@ -562,6 +609,10 @@ app.get('/api/admin/metrics', verifyAdmin, (req: Request, res: Response) => {
 });
 
 // 8. 404 handler for unknown API endpoints
+app.get('/health', (_req: Request, res: Response) => {
+  return res.json({ ok: true, service: 'muhammadi-egg-store' });
+});
+
 app.all('/api/*', (req: Request, res: Response) => {
   return res.status(404).json({ error: 'API endpoint not found' });
 });
