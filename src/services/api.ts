@@ -77,10 +77,38 @@ const MOCK_SETTINGS: StoreSettings = {
 };
 
 // Core Fetch functions
+const resolveProductImage = (image?: string) => {
+  if (!image) {
+    return `${import.meta.env.BASE_URL}images/egg_tray_30_fresh_1790534499444.jpg`;
+  }
+
+  // External/absolute URLs don't need modification
+  if (/^(https?:|data:|blob:)/i.test(image)) {
+    return image;
+  }
+
+  // Render returns paths such as /images/product.jpg.
+  // Convert them to the GitHub Pages base path.
+  if (image.startsWith('/images/')) {
+    return `${import.meta.env.BASE_URL}${image.slice('/'.length)}`;
+  }
+
+  // Already relative to the app
+  if (!image.startsWith('/')) {
+    return `${import.meta.env.BASE_URL}${image}`;
+  }
+
+  return image;
+};
 export const fetchProducts = async (token?: string): Promise<Product[]> => {
-  return adminRequest<Product[]>('/api/products', {
+  const products = await adminRequest<Product[]>('/api/products', {
     headers: token ? adminHeaders(token) : {},
   });
+
+  return products.map((product) => ({
+    ...product,
+    image: resolveProductImage(product.image),
+  }));
 };
 export const fetchSettings = async (): Promise<StoreSettings> => {
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_SETTINGS), 50));
