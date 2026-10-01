@@ -77,10 +77,11 @@ const MOCK_SETTINGS: StoreSettings = {
 };
 
 // Core Fetch functions
-export const fetchProducts = async (_token?: string): Promise<Product[]> => {
-  return new Promise((resolve) => setTimeout(() => resolve(MOCK_PRODUCTS), 50));
+export const fetchProducts = async (token?: string): Promise<Product[]> => {
+  return adminRequest<Product[]>('/api/products', {
+    headers: token ? adminHeaders(token) : {},
+  });
 };
-
 export const fetchSettings = async (): Promise<StoreSettings> => {
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_SETTINGS), 50));
 };
